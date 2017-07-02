@@ -10,15 +10,10 @@ namespace Meow.AssetUpdater.Editor
     public class SettingsInspector : UnityEditor.Editor
     {
         private readonly GUIContent _remoteUrlText = new GUIContent("Remote Url", "Remote Aseetbundles URL");
-
         private readonly GUIContent _versionFileNameText = new GUIContent("Version File Name", "The Version File You Generate");
-
         private readonly GUIContent _relativePathText = new GUIContent("Relative Path", "");
-
         private readonly GUIContent _targetPlatformText = new GUIContent("Target Platform", "Run app against the preview service");
-
         private readonly GUIContent _localBundleText = new GUIContent("Local Bundles", "The Assetbundles that would be copied to StreamingPath");
-
         private readonly GUIContent _remoteBundleText = new GUIContent("Remote Bundles", "The Assetbundles would be copied to AssetServer Path");
 
         private bool _isLocalFoldOut;
@@ -26,8 +21,6 @@ namespace Meow.AssetUpdater.Editor
 
         public override void OnInspectorGUI()
         {
-            //EditorGUILayout.TextField("Settings : ", EditorStyles.boldLabel);
-            //EditorGUILayout.Space();
             var downloaPath = Path.Combine(Path.Combine(Path.Combine(Settings.RemoteUrl, Settings.RelativePath), Settings.Platform.ToString()),
                 Settings.VersionFileName);
             EditorGUILayout.HelpBox(string.Format("You will download the assetbundles version file at url : {0}", downloaPath), MessageType.Info);
@@ -90,7 +83,9 @@ namespace Meow.AssetUpdater.Editor
                     }
                 }
             }
-            EditorGUILayout.HelpBox("Add the GameSparks Api Key and Secret associated with this game", MessageType.Info);
+            EditorGUILayout.HelpBox(
+                "Build Assetbundles to folder AssetBundlePool, generate versionfile and copy assetbundles to AssetBundlePool folder",
+                MessageType.Info);
             EditorGUILayout.BeginHorizontal();
             GUILayout.FlexibleSpace();
             if (GUILayout.Button("\tBuild AssetBundles\t"))
