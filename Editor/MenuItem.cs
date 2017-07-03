@@ -7,7 +7,7 @@ namespace Meow.AssetUpdater.Editor
 {
     public static class MenuItems
     {
-        [MenuItem("Window/Assets MainUpdater")]
+        [MenuItem("Window/AssetUpdater Setting")]
         public static void Init()
         {
             Selection.activeObject = Settings.Instance;

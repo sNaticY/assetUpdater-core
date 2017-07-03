@@ -19,6 +19,3 @@ AssetUpdater 为开发者提供了方便的生成以及下载 Assetbundle 的工
 #### 生成 Assetbundle
 
 导入插件后单击 Unity 菜单栏中的 `Window/AssetUpdater Settings`即可在 Inspector 中显示设置面板。如下图所示：
-
-![AssetUpdater settings](http://osccnzbxn.bkt.clouddn.com/asset-updater-settings.png)
-
