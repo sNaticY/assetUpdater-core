@@ -18,3 +18,38 @@ AssetUpdater 为开发者提供了方便的生成以及下载 Assetbundle 的工
 #### 生成 Assetbundle
 
 导入插件后单击 Unity 菜单栏中的 `Window/AssetUpdater Settings`即可在 Inspector 中显示设置面板。如下图所示：
+
+当你为某些文件设置`assetbundle name`后，该 assetbundle 就会出现在`Local Bundles`或`Remote Bundles`中，其中`Local Bundles`中的 assetbundle 会在生成后被额外复制到`streamingassets`目录下。在打包时随安装包发布，并生成独特的 versionfile 做记录，放置重复下载。
+
+选择平台后点击最下方`Build Assetbundles`按钮即可生成 Assetbundle 及其版本信息文件。其中原始的 assetbundle 及其 assetbundlemanifest 文件会被放置在与 Unity 工程中`Assets`目录同级的`AssetBundlePool`文件夹，并将 assetbundle 文件按照原始目录结构复制到与 Unity 工程中`Assets`目录同级的`AssetBundleServer`文件夹中，同时在该文件夹生成版本信息文件，版本信息文件默认文件名为`versionfile.bytes`。`AssetBundleServer`文件夹中的全部内容放置在你的 http 文件服务器中供客户端下载即可。
+
+> 如需要本地测试则可以在`AssetBundleServer`目录运行`sudo python -m SimpleHTTPServer 80`命令，即可开启本地 http 文件服务，访问 http://localhost 即可下载文件。
+
+#### 下载 Assetbundle
+
+在`AssetUpdater Seetings`中设置`remote url`为你的 http 文件服务器地址，如需本地测试则设置为 http://localhost 即可。
+
+在 Unity 工程中添加如下代码。
+
+```csharp
+using Meow.AssetUpdater.Core;
+using UnityEngine;
+
+public class TestScript : MonoBehaviour
+{
+	// Use this for initialization
+	IEnumerator Start()
+	{
+		yield return MainUpdater.LoadAllVersionFiles();
+		yield return MainUpdater.UpdateFromStreamingAsset();
+		yield return MainUpdater.UpdateFromRemoteAsset();
+	}	
+}
+```
+
+`MainUpdater.LoadAllVersionFiles()`会加载本地`streamingAssetPath`和`persistentDataPath`（如果不存在则会自动生成一个）以及`remote url`中所有的 versionfile。
+
+`MainUpdater.UpdateFromStreamingAsset()`则会对比`persistentDataPath`和`streamingAssetPath`中的 versionfile 并将不存在或版本更新的 assetbundle 文件复制至`persistentDataPath`中。复制后将会更新`persistentDataPath`对应的 versionfile 中的信息并将其写入磁盘。每复制完一个 assetbundle 并将其写入磁盘后会立即更新 versionfile。因此即使下载过程中断也不会导致已下载的 assetbundle 下次启动时被重复下载。
+
+`MainUpdater.UpdateFromRemoteAsset()`会对比`persistentDataPath`和`remote Url`中的 versionfile，将不存在或版本更新的 assetbundle 文件复制至`persistentDataPath`中。在生成 assetbundle 时勾选至`Local Bundles`的 assetbundle 文件在上一步已被更新至 `persistentDataPath`因此不会重复下载，除非 remote 中的 assetbundle 版本更新。每更新完一个 assetbundle 并将其写入磁盘后会立即更新 versionfile。因此即使下载过程中断也不会导致已下载的 assetbundle 下次启动时被重复下载。
+
