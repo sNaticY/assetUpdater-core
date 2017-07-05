@@ -116,7 +116,7 @@ namespace Meow.AssetUpdater.Core
             else
             {
                 Debug.LogError("Given asset path is not exist in any downloaded assetbundles");
-                return "";A
+                return "";
             }
         }
 
