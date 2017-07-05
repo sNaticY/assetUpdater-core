@@ -9,18 +9,39 @@ namespace Meow.AssetUpdater.Core
 {
     public class UpdateOperation : CustomYieldInstruction
     {
+        /// <summary>
+        /// the download progress of current downloading file (0,1)
+        /// </summary>
         public float SingleProgress{ get { return _downloadOperation == null ? 0 : _downloadOperation.Progress; } }
         
+        /// <summary>
+        /// the download progress of all files (0,1)
+        /// </summary>
         public float TotalProgress { get { return (float)TotalownloadedSize / TotalSize; } }
         
+        /// <summary>
+        /// the number of bytes you have downloaded for current downloading file
+        /// </summary>
         public int SingleDownloadedSize { get { return _downloadOperation == null || _currentUpdatingBundle.Value == null ? 1 : (int)(_downloadOperation.Progress * _currentUpdatingBundle.Value.Size); } }
         
+        /// <summary>
+        /// the size of current downloading file
+        /// </summary>
         public int SingleSize { get { return _currentUpdatingBundle.Value == null ? 1 : _currentUpdatingBundle.Value.Size; } }
         
+        /// <summary>
+        /// the number of bytes you have downloaded for all files
+        /// </summary>
         public long TotalownloadedSize { get { return _writedSize + SingleDownloadedSize; } }
         
+        /// <summary>
+        /// the size of all files
+        /// </summary>
         public long TotalSize { get; private set; }
 
+        /// <summary>
+        /// the count of remaining assetbundls
+        /// </summary>
         public int RemainBundleCount
         {
             get { return _updateBundleQueue.Count; }

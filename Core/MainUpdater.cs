@@ -40,14 +40,24 @@ namespace Meow.AssetUpdater.Core
         private static VersionInfo _remoteVersionInfo;
         private static VersionInfo _persistentVersionInfo;
         private static VersionInfo _streamingVersionInfo;
-
+        
+        /// <summary>
+        /// Initialize global settings of AssetUpdater
+        /// </summary>
+        /// <param name="remoteUrl">the assetbundle server url you want to download from</param>
+        /// <param name="relativePath">the relative directory of your assetbundle root path</param>
+        /// <param name="versionFileName">name of version file, default by "versionfile.bytes"</param>
         public static void Initialize(string remoteUrl, string relativePath, string versionFileName)
         {
             Settings.RemoteUrl = remoteUrl;
             Settings.RelativePath = relativePath;
             Settings.VersionFileName = versionFileName;
         }
-
+        
+        /// <summary>
+        /// download all version files which in remote url, persistentDataPath and streamingAssetPath. perpare for downloading
+        /// </summary>
+        /// <returns></returns>
         public static IEnumerator LoadAllVersionFiles()
         {
             var vFRoot = Path.Combine(Settings.RelativePath, Utils.GetBuildPlatform(Application.platform).ToString());
@@ -78,6 +88,10 @@ namespace Meow.AssetUpdater.Core
             }
         }
         
+        /// <summary>
+        /// download files from streamingAssetPath to persistentDataPath, then update versionfile in persistentDataPath
+        /// </summary>
+        /// <returns>updateOperation object contains current downloading information</returns>
         public static UpdateOperation UpdateFromStreamingAsset()
         {
             return new UpdateOperation(_persistentVersionInfo, _streamingVersionInfo, SourceType.StreamingPath);
@@ -86,6 +100,24 @@ namespace Meow.AssetUpdater.Core
         public static UpdateOperation UpdateFromRemoteAsset()
         {
             return new UpdateOperation(_persistentVersionInfo, _remoteVersionInfo, SourceType.RemotePath);
+        }
+        
+        /// <summary>
+        /// get assetbundle name by input asset path
+        /// </summary>
+        /// <param name="path">asset path</param>
+        /// <returns>assetbundle name</returns>
+        public static string GetAssetbundleNameByAssetPath(string path)
+        {
+            if (_persistentVersionInfo.BundlePath.ContainsKey(path))
+            {
+                return _persistentVersionInfo.BundlePath[path];
+            }
+            else
+            {
+                Debug.LogError("Given asset path is not exist in any downloaded assetbundles");
+                return "";A
+            }
         }
 
     }
