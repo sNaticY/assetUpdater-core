@@ -67,13 +67,16 @@ public class TestScript : MonoBehaviour
 public static void Initialize(string remoteUrl, string relativePath, string versionFileName);
   
 /// <summary>
-/// 下载位于远程服务器、persistentDataPath 以及 streamingAssetPath 中的所有 versionfile，用于对比文件状态生成下载列表准备下载
+/// 下载位于远程服务器、persistentDataPath 以及 streamingAssetPath 中的所有 versionfile，
+/// 用于对比文件状态生成下载列表准备下载
 /// </summary>
 /// <returns>返回 IEnumrator 可在 coroutine 中通过 "yield return" 调用以实现异步操作</returns>
 public static IEnumerator LoadAllVersionFiles();
 
 /// <summary>
-/// 从 StreamingAssetPath 或 RemoteUrl 下载 assetbundle 到 persistentDataPath，之所以分成两个函数是因为只有 UpdateFromRemoteAsset() 会消耗流量。因此开发者可以考虑通过返回的 UpdateOperation 中的对象进行 UI 提示等。
+/// 从 StreamingAssetPath 或 RemoteUrl 下载 assetbundle 到 persistentDataPath，
+/// 之所以分成两个函数是因为只有 UpdateFromRemoteAsset() 会消耗流量。因此开发者可以考虑
+/// 通过返回的 UpdateOperation 中的对象进行 UI 提示等。
 /// </summary>
 /// <returns>返回 UpdateOperation 对象提供当前 Update 信息，如下载进度，剩余文件大小等</returns>
 public static UpdateOperation UpdateFromStreamingAsset();
