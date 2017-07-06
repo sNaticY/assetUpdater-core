@@ -55,7 +55,7 @@ public class TestScript : MonoBehaviour
 
 # 主要接口
 
-## Meow.AssetUpdater.MainUpdater
+## Meow.AssetUpdater.Core.MainUpdater
 
 ```csharp
 /// <summary>
@@ -90,7 +90,7 @@ public static UpdateOperation UpdateFromRemoteAsset();
 public static string GetAssetbundleNameByAssetPath(string path)
 ```
 
-## Meow.AssetUpdater.UpdateOperation
+## Meow.AssetUpdater.Core.UpdateOperation
 
 ```csharp
 /// <summary>
