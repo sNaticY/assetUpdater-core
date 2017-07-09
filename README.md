@@ -21,7 +21,7 @@ AssetUpdater 为开发者提供了方便的生成以及下载 Assetbundle 的工
 
 ![AssetUpdater settings](http://osccnzbxn.bkt.clouddn.com/17070701.png)
 
-当你为某些文件设置`assetbundle name`后，该 assetbundle 就会出现在`Local Bundles`或`Remote Bundles`中，其中`Local Bundles`中的 assetbundle 会在生成后被额外复制到`streamingassets`目录下。在打包时随安装包发布，并生成独特的 versionfile 做记录，放置重复下载。
+当你为某些文件设置`assetbundle name`后，该 assetbundle 就会出现在`Local Bundles`或`Remote Bundles`中，其中`Local Bundles`中的 assetbundle 会在生成后被额外复制到`streamingassets`目录下。在打包时随安装包发布，并生成独特的 versionfile 做记录，防止资源重复下载。
 
 选择平台后点击最下方`Build Assetbundles`按钮即可生成 Assetbundle 及其版本信息文件。其中原始的 assetbundle 及其 assetbundlemanifest 文件会被放置在与 Unity 工程中`Assets`目录同级的`AssetBundlePool`文件夹，并将 assetbundle 文件按照原始目录结构复制到与 Unity 工程中`Assets`目录同级的`AssetBundleServer`文件夹中，同时在该文件夹生成版本信息文件，版本信息文件默认文件名为`versionfile.bytes`。`AssetBundleServer`文件夹中的全部内容放置在你的 http 文件服务器中供客户端下载即可。
 
