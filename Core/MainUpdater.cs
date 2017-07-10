@@ -41,6 +41,30 @@ namespace Meow.AssetUpdater.Core
         private static VersionInfo _persistentVersionInfo;
         private static VersionInfo _streamingVersionInfo;
         
+#if UNITY_EDITOR
+        private static int _isSimulationMode = -1;
+        
+        public static bool IsSimulationMode
+        {
+            get
+            {
+                if (_isSimulationMode == -1)
+                    _isSimulationMode = UnityEditor.EditorPrefs.GetBool("AssetUpdaterSimulationMode", true) ? 1 : 0;
+
+                return _isSimulationMode != 0;
+            }
+            set
+            {
+                int newValue = value ? 1 : 0;
+                if (newValue != _isSimulationMode)
+                {
+                    _isSimulationMode = newValue;
+                    UnityEditor.EditorPrefs.SetBool("AssetUpdaterSimulationMode", value);
+                }
+            }
+        }
+#endif
+        
         /// <summary>
         /// Initialize global settings of AssetUpdater
         /// </summary>
@@ -60,31 +84,36 @@ namespace Meow.AssetUpdater.Core
         /// <returns></returns>
         public static IEnumerator LoadAllVersionFiles()
         {
-            var vFRoot = Path.Combine(Settings.RelativePath, Utils.GetBuildPlatform(Application.platform).ToString());
-            var vFPath = Path.Combine(vFRoot, Settings.VersionFileName);
-
-            var op = new DownloadOperation(SourceType.RemotePath, vFPath);
-            yield return op;
-            _remoteVersionInfo = JsonMapper.ToObject<VersionInfo>(op.Text);
-            if (_remoteVersionInfo == null)
+#if UNITY_EDITOR
+            if (!IsSimulationMode)
+#endif
             {
-                Debug.LogError("Can not download remote version file");
-            }
+                var vFRoot = Path.Combine(Settings.RelativePath, Utils.GetBuildPlatform(Application.platform).ToString());
+                var vFPath = Path.Combine(vFRoot, Settings.VersionFileName);
 
-            op = new DownloadOperation(SourceType.PersistentPath, vFPath);
-            yield return op;
-            _persistentVersionInfo = JsonMapper.ToObject<VersionInfo>(op.Text);
-            if (_persistentVersionInfo == null)
-            {
-                _persistentVersionInfo = new VersionInfo();
-            }
+                var op = new DownloadOperation(SourceType.RemotePath, vFPath);
+                yield return op;
+                _remoteVersionInfo = JsonMapper.ToObject<VersionInfo>(op.Text);
+                if (_remoteVersionInfo == null)
+                {
+                    Debug.LogError("Can not download remote version file");
+                }
 
-            op = new DownloadOperation(SourceType.StreamingPath, vFPath);
-            yield return op;
-            _streamingVersionInfo = JsonMapper.ToObject<VersionInfo>(op.Text);
-            if (_streamingVersionInfo == null)
-            {
-                _streamingVersionInfo = new VersionInfo();
+                op = new DownloadOperation(SourceType.PersistentPath, vFPath);
+                yield return op;
+                _persistentVersionInfo = JsonMapper.ToObject<VersionInfo>(op.Text);
+                if (_persistentVersionInfo == null)
+                {
+                    _persistentVersionInfo = new VersionInfo();
+                }
+
+                op = new DownloadOperation(SourceType.StreamingPath, vFPath);
+                yield return op;
+                _streamingVersionInfo = JsonMapper.ToObject<VersionInfo>(op.Text);
+                if (_streamingVersionInfo == null)
+                {
+                    _streamingVersionInfo = new VersionInfo();
+                }
             }
         }
         

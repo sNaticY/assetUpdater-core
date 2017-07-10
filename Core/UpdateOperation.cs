@@ -61,30 +61,35 @@ namespace Meow.AssetUpdater.Core
 
         public UpdateOperation(VersionInfo originVersion, VersionInfo sourceVersion, SourceType souceType)
         {
-            _originVersionInfo = originVersion;
-            _sourceVersionInfo = sourceVersion;
-            if (originVersion.VersionNum < sourceVersion.VersionNum)
+#if UNITY_EDITOR
+            if (!MainUpdater.IsSimulationMode)
+#endif
             {
-                foreach (var sourceBundle in sourceVersion.Bundles)
+                _originVersionInfo = originVersion;
+                _sourceVersionInfo = sourceVersion;
+                if (originVersion.VersionNum < sourceVersion.VersionNum)
                 {
-                    var isContain = false;
-                    foreach (var originBundle in originVersion.Bundles)
+                    foreach (var sourceBundle in sourceVersion.Bundles)
                     {
-                        if (originBundle.Name == sourceBundle.Name)
+                        var isContain = false;
+                        foreach (var originBundle in originVersion.Bundles)
                         {
-                            if (originBundle.Md5Code != sourceBundle.Md5Code)
+                            if (originBundle.Name == sourceBundle.Name)
                             {
-                                _updateBundleQueue.Enqueue(new KeyValuePair<SourceType, BundleInfo>(souceType, sourceBundle));
-                                TotalSize += sourceBundle.Size;
+                                if (originBundle.Md5Code != sourceBundle.Md5Code)
+                                {
+                                    _updateBundleQueue.Enqueue(new KeyValuePair<SourceType, BundleInfo>(souceType, sourceBundle));
+                                    TotalSize += sourceBundle.Size;
+                                }
+                                isContain = true;
+                                break;
                             }
-                            isContain = true;
-                            break;
                         }
-                    }
-                    if (!isContain)
-                    {
-                        _updateBundleQueue.Enqueue(new KeyValuePair<SourceType, BundleInfo>(souceType, sourceBundle));
-                        TotalSize += sourceBundle.Size;
+                        if (!isContain)
+                        {
+                            _updateBundleQueue.Enqueue(new KeyValuePair<SourceType, BundleInfo>(souceType, sourceBundle));
+                            TotalSize += sourceBundle.Size;
+                        }
                     }
                 }
             }
@@ -94,30 +99,16 @@ namespace Meow.AssetUpdater.Core
         {
             get
             {
-                if (_downloadOperation == null)
+#if UNITY_EDITOR
+                if (MainUpdater.IsSimulationMode)
                 {
-                    if (_updateBundleQueue.Count > 0)
-                    {
-                        _currentUpdatingBundle = _updateBundleQueue.Dequeue();
-                        _downloadOperation = new DownloadOperation(_currentUpdatingBundle.Key, CalcPath(_currentUpdatingBundle.Value.Name));
-                        MainUpdater.Instance.StartCoroutine(_downloadOperation);
-                    }
-                    else
-                    {
-                        IsDone = true;
-                    }
+                    IsDone = true;
                 }
                 else
+#endif
                 {
-                    if (_downloadOperation.IsDown)
+                    if (_downloadOperation == null)
                     {
-                        Utils.Instance.WriteBytesTo(SourceType.PersistentPath, CalcPath(_currentUpdatingBundle.Value.Name), _downloadOperation.Bytes);
-                        _originVersionInfo.UpdateBundle(_currentUpdatingBundle.Value);
-                        var bytes = System.Text.Encoding.ASCII.GetBytes(JsonMapper.ToJson(_originVersionInfo));
-                        Utils.Instance.WriteBytesTo(SourceType.PersistentPath, CalcPath(Settings.VersionFileName), bytes);
-                        
-                        _writedSize += _downloadOperation.Bytes.Length;
-                        
                         if (_updateBundleQueue.Count > 0)
                         {
                             _currentUpdatingBundle = _updateBundleQueue.Dequeue();
@@ -126,10 +117,34 @@ namespace Meow.AssetUpdater.Core
                         }
                         else
                         {
-                            _originVersionInfo.UpdateVersion(_sourceVersionInfo);
-                            bytes = System.Text.Encoding.ASCII.GetBytes(JsonMapper.ToJson(_originVersionInfo));
-                            Utils.Instance.WriteBytesTo(SourceType.PersistentPath, CalcPath(Settings.VersionFileName), bytes);
                             IsDone = true;
+                        }
+                    }
+                    else
+                    {
+                        if (_downloadOperation.IsDown)
+                        {
+                            Utils.Instance.WriteBytesTo(SourceType.PersistentPath, CalcPath(_currentUpdatingBundle.Value.Name),
+                                _downloadOperation.Bytes);
+                            _originVersionInfo.UpdateBundle(_currentUpdatingBundle.Value);
+                            var bytes = System.Text.Encoding.ASCII.GetBytes(JsonMapper.ToJson(_originVersionInfo));
+                            Utils.Instance.WriteBytesTo(SourceType.PersistentPath, CalcPath(Settings.VersionFileName), bytes);
+
+                            _writedSize += _downloadOperation.Bytes.Length;
+
+                            if (_updateBundleQueue.Count > 0)
+                            {
+                                _currentUpdatingBundle = _updateBundleQueue.Dequeue();
+                                _downloadOperation = new DownloadOperation(_currentUpdatingBundle.Key, CalcPath(_currentUpdatingBundle.Value.Name));
+                                MainUpdater.Instance.StartCoroutine(_downloadOperation);
+                            }
+                            else
+                            {
+                                _originVersionInfo.UpdateVersion(_sourceVersionInfo);
+                                bytes = System.Text.Encoding.ASCII.GetBytes(JsonMapper.ToJson(_originVersionInfo));
+                                Utils.Instance.WriteBytesTo(SourceType.PersistentPath, CalcPath(Settings.VersionFileName), bytes);
+                                IsDone = true;
+                            }
                         }
                     }
                 }
