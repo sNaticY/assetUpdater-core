@@ -100,6 +100,7 @@ namespace Meow.AssetUpdater.Core
                     {
                         _currentUpdatingBundle = _updateBundleQueue.Dequeue();
                         _downloadOperation = new DownloadOperation(_currentUpdatingBundle.Key, CalcPath(_currentUpdatingBundle.Value.Name));
+                        MainUpdater.Instance.StartCoroutine(_downloadOperation);
                     }
                     else
                     {
@@ -121,6 +122,7 @@ namespace Meow.AssetUpdater.Core
                         {
                             _currentUpdatingBundle = _updateBundleQueue.Dequeue();
                             _downloadOperation = new DownloadOperation(_currentUpdatingBundle.Key, CalcPath(_currentUpdatingBundle.Value.Name));
+                            MainUpdater.Instance.StartCoroutine(_downloadOperation);
                         }
                         else
                         {
