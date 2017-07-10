@@ -23,6 +23,7 @@ namespace Meow.AssetUpdater.Editor
         [MenuItem("Window/Meow Asset Updater/Settings")]
         public static void Init()
         {
+            EditorUtility.SetDirty(Settings.Instance);
             Selection.activeObject = Settings.Instance;
         }
     }
