@@ -155,7 +155,7 @@ namespace Meow.AssetUpdater.Core
 
         private string CalcPath(string fileName)
         {
-            var rootPath = Path.Combine(Settings.RelativePath, Utils.GetBuildPlatform(Application.platform).ToString());
+            var rootPath = Path.Combine(Settings.RelativePath, Utils.GetBuildPlatform().ToString());
             var path = Path.Combine(rootPath, fileName);
             return path;
         }
