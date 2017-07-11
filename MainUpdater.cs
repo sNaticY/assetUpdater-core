@@ -2,10 +2,11 @@ using System;
 using System.Collections;
 using System.IO;
 using System.Runtime.Versioning;
+using Meow.AssetUpdater.Core;
 using LitJson;
 using UnityEngine;
 
-namespace Meow.AssetUpdater.Core
+namespace Meow.AssetUpdater
 {
     public class MainUpdater : MonoBehaviour
     {
@@ -147,6 +148,22 @@ namespace Meow.AssetUpdater.Core
                 Debug.LogError("Given asset path is not exist in any downloaded assetbundles");
                 return "";
             }
+        }
+
+        public static string GetAssetbundleRootPath(bool forWWW)
+        {
+            var path = Path.Combine(Path.Combine(Application.persistentDataPath, Settings.RelativePath), Utils.GetBuildPlatform().ToString());
+            
+            if (forWWW)
+            {
+                path = Path.Combine("file://", path);
+            }
+            return path;
+        }
+
+        public static string GetManifestName()
+        {
+            return Utils.GetBuildPlatform().ToString();
         }
 
     }
