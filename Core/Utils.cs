@@ -104,6 +104,12 @@ namespace Meow.AssetUpdater.Core
             }
             return buildPlatform;
         }
+
+        public static BuildPlatform GetBuildPlatform()
+        {
+            return GetBuildPlatform(Application.platform);
+        }
+        
 #if UNITY_EDITOR
         public static UnityEditor.BuildTarget GetBuildTarget(BuildPlatform platform)
         {
