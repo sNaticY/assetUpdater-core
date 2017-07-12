@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Security.Cryptography;
+using Meow.AssetUpdater.Core;
 using LitJson;
 using UnityEngine;
 
-namespace Meow.AssetUpdater.Core
+namespace Meow.AssetUpdater
 {
     public class UpdateOperation : CustomYieldInstruction
     {
@@ -51,6 +51,7 @@ namespace Meow.AssetUpdater.Core
 
         private long _writedSize;
         
+        private MainUpdater _updater;
         private readonly VersionInfo _originVersionInfo;
         private readonly VersionInfo _sourceVersionInfo;
 
@@ -59,14 +60,16 @@ namespace Meow.AssetUpdater.Core
         
         private DownloadOperation _downloadOperation;
 
-        public UpdateOperation(VersionInfo originVersion, VersionInfo sourceVersion, SourceType souceType)
+        public UpdateOperation(MainUpdater updater, VersionInfo originVersion, VersionInfo sourceVersion, SourceType souceType)
         {
+            _updater = updater;
+            _originVersionInfo = originVersion;
+            _sourceVersionInfo = sourceVersion;
+            
 #if UNITY_EDITOR
             if (!MainUpdater.IsSimulationMode)
 #endif
             {
-                _originVersionInfo = originVersion;
-                _sourceVersionInfo = sourceVersion;
                 if (originVersion.VersionNum < sourceVersion.VersionNum)
                 {
                     foreach (var sourceBundle in sourceVersion.Bundles)
@@ -112,8 +115,8 @@ namespace Meow.AssetUpdater.Core
                         if (_updateBundleQueue.Count > 0)
                         {
                             _currentUpdatingBundle = _updateBundleQueue.Dequeue();
-                            _downloadOperation = new DownloadOperation(_currentUpdatingBundle.Key, CalcPath(_currentUpdatingBundle.Value.Name));
-                            MainUpdater.Instance.StartCoroutine(_downloadOperation);
+                            _downloadOperation = new DownloadOperation(_updater, _currentUpdatingBundle.Key, CalcPath(_currentUpdatingBundle.Value.Name));
+                            _updater.StartCoroutine(_downloadOperation);
                         }
                         else
                         {
@@ -128,21 +131,21 @@ namespace Meow.AssetUpdater.Core
                                 _downloadOperation.Bytes);
                             _originVersionInfo.UpdateBundle(_currentUpdatingBundle.Value);
                             var bytes = System.Text.Encoding.ASCII.GetBytes(JsonMapper.ToJson(_originVersionInfo));
-                            Utils.Instance.WriteBytesTo(SourceType.PersistentPath, CalcPath(Settings.VersionFileName), bytes);
+                            Utils.Instance.WriteBytesTo(SourceType.PersistentPath, CalcPath(_updater.VersionFileName), bytes);
 
                             _writedSize += _downloadOperation.Bytes.Length;
 
                             if (_updateBundleQueue.Count > 0)
                             {
                                 _currentUpdatingBundle = _updateBundleQueue.Dequeue();
-                                _downloadOperation = new DownloadOperation(_currentUpdatingBundle.Key, CalcPath(_currentUpdatingBundle.Value.Name));
-                                MainUpdater.Instance.StartCoroutine(_downloadOperation);
+                                _downloadOperation = new DownloadOperation(_updater, _currentUpdatingBundle.Key, CalcPath(_currentUpdatingBundle.Value.Name));
+                                _updater.StartCoroutine(_downloadOperation);
                             }
                             else
                             {
                                 _originVersionInfo.UpdateVersion(_sourceVersionInfo);
                                 bytes = System.Text.Encoding.ASCII.GetBytes(JsonMapper.ToJson(_originVersionInfo));
-                                Utils.Instance.WriteBytesTo(SourceType.PersistentPath, CalcPath(Settings.VersionFileName), bytes);
+                                Utils.Instance.WriteBytesTo(SourceType.PersistentPath, CalcPath(_updater.VersionFileName), bytes);
                                 IsDone = true;
                             }
                         }
@@ -155,7 +158,7 @@ namespace Meow.AssetUpdater.Core
 
         private string CalcPath(string fileName)
         {
-            var rootPath = Path.Combine(Settings.RelativePath, Utils.GetBuildPlatform().ToString());
+            var rootPath = Path.Combine(_updater.ProjectName, Utils.GetBuildPlatform().ToString());
             var path = Path.Combine(rootPath, fileName);
             return path;
         }

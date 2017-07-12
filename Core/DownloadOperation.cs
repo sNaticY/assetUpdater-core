@@ -34,13 +34,13 @@ namespace Meow.AssetUpdater.Core
             get { return www.isDone; }
         }
         
-        public DownloadOperation(SourceType source, string path)
+        public DownloadOperation(MainUpdater updater, SourceType source, string path)
         {
             string targetUrl = string.Empty;
             switch (source)
             {
                 case SourceType.RemotePath:
-                    targetUrl = Path.Combine(Settings.RemoteUrl, path);
+                    targetUrl = Path.Combine(updater.RemoteUrl, path);
                     break;
                 case SourceType.PersistentPath:
                     targetUrl = Utils.GetWWWPersistentPath(path);
