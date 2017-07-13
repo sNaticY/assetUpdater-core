@@ -134,7 +134,12 @@ namespace Meow.AssetUpdater.Editor
             var assetBundle = AssetBundle.LoadFromMemory(bytes);
             foreach (var content in assetBundle.GetAllAssetNames())
             {
-                versionInfo.BundlePath.Add(content, name);
+                versionInfo.BundlePath.Add(content.ToLower(), name);
+            }
+
+            foreach (var content in assetBundle.GetAllScenePaths())
+            {
+                versionInfo.BundlePath.Add(content.ToLower(), name);
             }
             assetBundle.Unload(true);
             // add bundleInfo to versionInfo
