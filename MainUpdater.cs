@@ -17,10 +17,10 @@ namespace Meow.AssetUpdater
         public string RemoteUrl;
         public string ProjectName;
         public string VersionFileName;
-        
+
 #if UNITY_EDITOR
         private static int _isSimulationMode = -1;
-        
+
         public static bool IsSimulationMode
         {
             get
@@ -61,7 +61,7 @@ namespace Meow.AssetUpdater
             ProjectName = projectName;
             VersionFileName = versionFileName;
         }
-        
+
         /// <summary>
         /// download all version files which in remote url, persistentDataPath and streamingAssetPath. perpare for downloading
         /// </summary>
@@ -100,7 +100,7 @@ namespace Meow.AssetUpdater
                 }
             }
         }
-        
+
         /// <summary>
         /// download files from streamingAssetPath to persistentDataPath, then update versionfile in persistentDataPath
         /// </summary>
@@ -114,7 +114,7 @@ namespace Meow.AssetUpdater
         {
             return new UpdateOperation(this, _persistentVersionInfo, _remoteVersionInfo, SourceType.RemotePath);
         }
-        
+
         /// <summary>
         /// get assetbundle name by input asset path
         /// </summary>
@@ -123,13 +123,18 @@ namespace Meow.AssetUpdater
         public string GetAssetbundleNameByAssetPath(string path)
         {
             string result = "";
-            if (_persistentVersionInfo.BundlePath.ContainsKey(path))
+#if UNITY_EDITOR
+            if (!IsSimulationMode)
+#endif
             {
-                result = _persistentVersionInfo.BundlePath[path];
-            }
-            else
-            {
-                Debug.LogError("Given asset path is not exist in any downloaded assetbundles");
+                if (_persistentVersionInfo.BundlePath.ContainsKey(path.ToLower()))
+                {
+                    result = _persistentVersionInfo.BundlePath[path];
+                }
+                else
+                {
+                    Debug.LogError("Given asset path is not exist in any downloaded assetbundles");
+                }
             }
             return result;
         }
@@ -137,7 +142,7 @@ namespace Meow.AssetUpdater
         public string GetAssetbundleRootPath(bool forWWW)
         {
             var path = Path.Combine(Path.Combine(Application.persistentDataPath, ProjectName), Utils.GetBuildPlatform().ToString());
-            
+
             if (forWWW)
             {
                 path = "file://" + path;
@@ -149,6 +154,5 @@ namespace Meow.AssetUpdater
         {
             return Utils.GetBuildPlatform().ToString();
         }
-
     }
 }
