@@ -7,56 +7,61 @@ namespace Meow.AssetUpdater.Core
 {
     public class DownloadOperation : CustomYieldInstruction
     {
-        private readonly WWW www;
+        private readonly string _targetUrl;
+        private WWW _www;
 
         public float Progress
         {
-            get { return www.progress; }
+            get { return _www.progress; }
         }
 
         public AssetBundle AssetBundle
         {
-            get { return www.assetBundle; }
+            get { return _www.assetBundle; }
         }
 
         public byte[] Bytes
         {
-            get { return www.bytes; }
+            get { return _www.bytes; }
         }
 
         public string Text
         {
-            get { return www.text; }
+            get { return _www.text; }
         }
         
-        public bool IsDown
-        {
-            get { return www.isDone; }
-        }
+        public bool IsDone { get; private set; }
         
         public DownloadOperation(MainUpdater updater, SourceType source, string path)
         {
-            string targetUrl = string.Empty;
+            _targetUrl = string.Empty;
             switch (source)
             {
                 case SourceType.RemotePath:
-                    targetUrl = Path.Combine(updater.RemoteUrl, path);
+                    _targetUrl = Path.Combine(updater.RemoteUrl, path);
                     break;
                 case SourceType.PersistentPath:
-                    targetUrl = Utils.GetWWWPersistentPath(path);
+                    _targetUrl = Utils.GetWWWPersistentPath(path);
                     break;
                 case SourceType.StreamingPath:
-                    targetUrl = Utils.GetWWWStreamingAssetPath(path);
+                    _targetUrl = Utils.GetWWWStreamingAssetPath(path);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException("source", source, null);
             }
-            www = new WWW(targetUrl);
         }
         
         public override bool keepWaiting
         {
-            get { return !www.isDone; }
+            get
+            {
+                if (_www == null)
+                {
+                    _www = new WWW(_targetUrl);
+                }
+                IsDone = _www.isDone;
+                return !IsDone;
+            }
         }
     }
 }

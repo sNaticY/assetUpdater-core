@@ -120,7 +120,7 @@ namespace Meow.AssetUpdater
         /// </summary>
         /// <param name="path">asset path</param>
         /// <returns>assetbundle name</returns>
-        public string GetAssetbundleNameByAssetPath(string path)
+        public string GetAssetbundlePathByAssetPath(string path)
         {
             string result = "";
 #if UNITY_EDITOR
@@ -129,7 +129,7 @@ namespace Meow.AssetUpdater
             {
                 if (_persistentVersionInfo.BundlePath.ContainsKey(path.ToLower()))
                 {
-                    result = _persistentVersionInfo.BundlePath[path];
+                    result = _persistentVersionInfo.BundlePath[path.ToLower()];
                 }
                 else
                 {

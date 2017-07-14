@@ -125,7 +125,7 @@ namespace Meow.AssetUpdater
                     }
                     else
                     {
-                        if (_downloadOperation.IsDown)
+                        if (_downloadOperation.IsDone)
                         {
                             Utils.Instance.WriteBytesTo(SourceType.PersistentPath, CalcPath(_currentUpdatingBundle.Value.Name),
                                 _downloadOperation.Bytes);
