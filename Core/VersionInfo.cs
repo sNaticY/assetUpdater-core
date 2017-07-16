@@ -10,6 +10,8 @@ namespace Meow.AssetUpdater.Core
 
         public string RelativePath = "";
 
+        public bool IsVersionCompelete = false;
+
         public List<BundleInfo> Bundles = new List<BundleInfo>();
         
         public Dictionary<string,string> BundlePath = new Dictionary<string, string>();

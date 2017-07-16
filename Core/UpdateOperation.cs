@@ -130,6 +130,7 @@ namespace Meow.AssetUpdater
                             Utils.Instance.WriteBytesTo(SourceType.PersistentPath, CalcPath(_currentUpdatingBundle.Value.Name),
                                 _downloadOperation.Bytes);
                             _originVersionInfo.UpdateBundle(_currentUpdatingBundle.Value);
+                            _originVersionInfo.IsVersionCompelete = false;
                             var bytes = System.Text.Encoding.ASCII.GetBytes(JsonMapper.ToJson(_originVersionInfo));
                             Utils.Instance.WriteBytesTo(SourceType.PersistentPath, CalcPath(_updater.VersionFileName), bytes);
 
@@ -144,6 +145,7 @@ namespace Meow.AssetUpdater
                             else
                             {
                                 _originVersionInfo.UpdateVersion(_sourceVersionInfo);
+                                _originVersionInfo.IsVersionCompelete = true;
                                 bytes = System.Text.Encoding.ASCII.GetBytes(JsonMapper.ToJson(_originVersionInfo));
                                 Utils.Instance.WriteBytesTo(SourceType.PersistentPath, CalcPath(_updater.VersionFileName), bytes);
                                 IsDone = true;
