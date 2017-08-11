@@ -29,6 +29,11 @@ namespace Meow.AssetUpdater.Core
         {
             get { return _www.text; }
         }
+
+        public string Error
+        {
+            get { return _www.error; }
+        }
         
         public bool IsDone { get; private set; }
         

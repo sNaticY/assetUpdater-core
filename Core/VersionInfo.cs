@@ -1,9 +1,11 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace Meow.AssetUpdater.Core
 {
+    [Serializable]
     public class VersionInfo
     {
         public long VersionNum = 100000000000;

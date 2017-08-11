@@ -1,9 +1,8 @@
-using UnityEngine;
-using System.Security.Cryptography;
-using System.Text;
+using System;
 
 namespace Meow.AssetUpdater.Core
 {
+    [Serializable]
     public class BundleInfo
     {
         public string Name;
