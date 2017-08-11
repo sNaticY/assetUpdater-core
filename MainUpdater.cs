@@ -11,7 +11,7 @@ namespace Meow.AssetUpdater
     public class MainUpdater : MonoBehaviour
     {
         private VersionInfo _remoteVersionInfo;
-        private VersionInfo _persistentVersionInfo;
+        [SerializeField] private VersionInfo _persistentVersionInfo;
         private VersionInfo _streamingVersionInfo;
 
         public string RemoteUrl;
@@ -74,14 +74,14 @@ namespace Meow.AssetUpdater
             {
                 var vFRoot = Path.Combine(ProjectName, Utils.GetBuildPlatform(Application.platform).ToString());
                 var vFPath = Path.Combine(vFRoot, VersionFileName);
-
                 var op = new DownloadOperation(this, SourceType.RemotePath, vFPath);
                 yield return op;
-                _remoteVersionInfo = JsonMapper.ToObject<VersionInfo>(op.Text);
-                if (_remoteVersionInfo == null)
+                if (!string.IsNullOrEmpty(op.Error))
                 {
-                    Debug.LogError("Can not download remote version file");
+                    Debug.LogError("Can not download remote version file, error = " + op.Error);
+                    yield break;
                 }
+                _remoteVersionInfo = JsonMapper.ToObject<VersionInfo>(op.Text);
 
                 op = new DownloadOperation(this, SourceType.PersistentPath, vFPath);
                 yield return op;
@@ -133,7 +133,7 @@ namespace Meow.AssetUpdater
                 }
                 else
                 {
-                    Debug.LogError("Given asset path is not exist in any downloaded assetbundles");
+                    Debug.LogErrorFormat("Given asset [{0}] path is not exist in any downloaded assetbundles", path);
                 }
             }
             return result;
