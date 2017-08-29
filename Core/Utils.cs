@@ -116,7 +116,7 @@ namespace Meow.AssetUpdater.Core
             UnityEditor.BuildTarget target = UnityEditor.BuildTarget.NoTarget;
             switch (platform)
             {
-                case BuildPlatform.Androod:
+                case BuildPlatform.Android:
                     target = UnityEditor.BuildTarget.Android;
                     break;
                 case BuildPlatform.iOS:
