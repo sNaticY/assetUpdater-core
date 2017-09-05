@@ -17,7 +17,7 @@ namespace Meow.AssetUpdater.Core
     {
         Windows,
         OSX,
-        Andriod,
+        Android,
         iOS,
         OtherPlatform,
     }
@@ -84,7 +84,7 @@ namespace Meow.AssetUpdater.Core
             switch (platform)
             {
                 case RuntimePlatform.Android:
-                    buildPlatform = BuildPlatform.Andriod;
+                    buildPlatform = BuildPlatform.Android;
                     break;
                 case RuntimePlatform.IPhonePlayer:
                     buildPlatform = BuildPlatform.iOS;
@@ -116,7 +116,7 @@ namespace Meow.AssetUpdater.Core
             UnityEditor.BuildTarget target = UnityEditor.BuildTarget.NoTarget;
             switch (platform)
             {
-                case BuildPlatform.Andriod:
+                case BuildPlatform.Android:
                     target = UnityEditor.BuildTarget.Android;
                     break;
                 case BuildPlatform.iOS:
